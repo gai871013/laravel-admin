@@ -199,12 +199,27 @@ class MultipleFile extends Field
 
         if (!empty($this->value)) {
             $this->setupPreviewOptions();
+            if(isset($this->options['deleteExtraData'][$this->column])){
+                $this->options['deleteExtraData'][$this->column] = $this->value;
+            }
         }
 
         $options = json_encode($this->options);
 
         $this->script = <<<EOT
-$("input{$this->getElementClassSelector()}").fileinput({$options});
+        option = {$options};
+$("input{$this->getElementClassSelector()}").fileinput(option).on('filepredelete', function(event, key, jqXHR, data) {
+   var multiple = option.deleteExtraData.{$this->column}; 
+   var tmp = [];
+   var k = 0;
+   for(var i in multiple){
+        if(k != key){
+        tmp.push(multiple[i]);
+        }
+        k++;
+   }
+   option.deleteExtraData.{$this->column} = tmp;
+});
 EOT;
 
         return parent::render();
