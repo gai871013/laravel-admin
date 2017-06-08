@@ -199,6 +199,9 @@ class MultipleFile extends Field
 
         if (!empty($this->value)) {
             $this->setupPreviewOptions();
+            if(isset($this->options['deleteExtraData'][$this->column])){
+                $this->options['deleteExtraData'][$this->column] = $this->value;
+            }
         }
 
         $options = json_encode($this->options);
